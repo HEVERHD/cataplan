@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Experiencias ────────────────────────────────────────────────────────────
+
+model Experience {
+  id          String    @id @default(cuid())
+  code        String    @unique // EXP-001
+  slug        String    @unique
+  name        String
+  types       String[] // ["Gastronómica", "Cultural"]
+  price       Int // en pesos colombianos
+  duration    String // "3 Horas"
+  description String    @db.Text
+  includes    String[]
+  images      String[] // Cloudinary URLs
+  active      Boolean   @default(true)
+  featured    Boolean   @default(false)
+  order       Int       @default(0)
+  bookings    Booking[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([active])
+  @@index([slug])
+}
+
+// ─── Reservas ────────────────────────────────────────────────────────────────
+
+enum BookingStatus {
+  PENDIENTE
+  CONFIRMADA
+  COMPLETADA
+  CANCELADA
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  experienceId   String
+  experience     Experience    @relation(fields: [experienceId], references: [id])
+  date           DateTime
+  people         Int
+  total          Int
+  status         BookingStatus @default(PENDIENTE)
+  customerName   String
+  customerEmail  String
+  customerPhone  String
+  wompiRef       String? // referencia de pago Wompi
+  groupId        String? // agrupa varias reservas de un mismo carrito
+  notes          String?       @db.Text
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([experienceId])
+  @@index([status])
+  @@index([date])
+  @@index([customerEmail])
+  @@index([groupId])
+}
+
+// ─── Auth (Better Auth) ──────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          String    @default("admin")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId             String
+  providerId            String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@index([identifier])
+}

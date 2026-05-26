@@ -1,0 +1,116 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* CataPlan brand colors */
+  --brand-teal: #2a9d8f;
+  --brand-teal-dark: #21867a;
+  --brand-teal-light: #3dbdad;
+  --brand-coral: #e76f51;
+  --brand-coral-dark: #d4522f;
+  --brand-coral-light: #f08668;
+
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --border: #e2e8f0;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --radius: 0.75rem;
+
+  /* shadcn compat */
+  --primary: var(--brand-teal);
+  --primary-foreground: #ffffff;
+  --secondary: var(--brand-coral);
+  --secondary-foreground: #ffffff;
+  --accent: #f0fdfa;
+  --accent-foreground: var(--brand-teal-dark);
+  --destructive: #ef4444;
+  --input: var(--border);
+  --ring: var(--brand-teal);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand-teal: var(--brand-teal);
+  --color-brand-teal-dark: var(--brand-teal-dark);
+  --color-brand-teal-light: var(--brand-teal-light);
+  --color-brand-coral: var(--brand-coral);
+  --color-brand-coral-dark: var(--brand-coral-dark);
+  --color-brand-coral-light: var(--brand-coral-light);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
+}
+
+* {
+  box-sizing: border-box;
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--brand-teal);
+  border-radius: 999px;
+}
+
+/* Gradientes de marca */
+.gradient-brand {
+  background: linear-gradient(135deg, var(--brand-teal) 0%, var(--brand-coral) 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(
+    160deg,
+    rgba(42, 157, 143, 0.92) 0%,
+    rgba(231, 111, 81, 0.85) 100%
+  );
+}
+
+/* Animaciones de entrada */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease forwards;
+}

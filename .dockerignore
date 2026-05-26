@@ -1,0 +1,12 @@
+.git
+.gitignore
+.next
+node_modules
+.env.local
+.env*.local
+Dockerfile
+.dockerignore
+prisma/migrations
+scripts
+README.md
+*.md

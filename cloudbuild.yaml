@@ -1,0 +1,49 @@
+substitutions:
+  _REGION: us-central1
+  _SERVICE: cataplan
+  _REPO: cataplan
+
+steps:
+  # 1. Build de la imagen con las variables públicas como build args
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - "--build-arg=NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${_NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
+      - "--build-arg=NEXT_PUBLIC_CLOUDINARY_API_KEY=${_NEXT_PUBLIC_CLOUDINARY_API_KEY}"
+      - "--build-arg=NEXT_PUBLIC_WOMPI_PUBLIC_KEY=${_NEXT_PUBLIC_WOMPI_PUBLIC_KEY}"
+      - "--build-arg=NEXT_PUBLIC_APP_URL=${_NEXT_PUBLIC_APP_URL}"
+      - "--build-arg=NEXT_PUBLIC_WHATSAPP_NUMBER=${_NEXT_PUBLIC_WHATSAPP_NUMBER}"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$COMMIT_SHA"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:latest"
+      - "."
+
+  # 2. Push a Artifact Registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - "--all-tags"
+      - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}"
+
+  # 3. Deploy a Cloud Run
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - "--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}:$COMMIT_SHA"
+      - "--region=${_REGION}"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--min-instances=0"
+      - "--max-instances=3"
+      - "--memory=512Mi"
+      - "--cpu=1"
+
+images:
+  - "${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/${_SERVICE}"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
