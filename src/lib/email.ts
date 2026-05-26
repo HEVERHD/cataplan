@@ -3,8 +3,6 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { formatCOP } from "@/lib/utils";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const FROM = process.env.RESEND_FROM_EMAIL ?? "CataPlan <onboarding@resend.dev>";
 const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "573001234567";
 
@@ -19,6 +17,7 @@ export interface BookingConfirmationData {
 }
 
 export async function sendBookingConfirmation(data: BookingConfirmationData): Promise<void> {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const formattedDate = format(data.date, "EEEE d 'de' MMMM, yyyy", { locale: es });
   const shortId = data.bookingId.slice(0, 12).toUpperCase();
 
