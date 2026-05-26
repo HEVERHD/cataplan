@@ -17,6 +17,10 @@ export interface BookingConfirmationData {
 }
 
 export async function sendBookingConfirmation(data: BookingConfirmationData): Promise<void> {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("[Email] RESEND_API_KEY no configurado, se omite el envío de email.");
+    return;
+  }
   const resend = new Resend(process.env.RESEND_API_KEY);
   const formattedDate = format(data.date, "EEEE d 'de' MMMM, yyyy", { locale: es });
   const shortId = data.bookingId.slice(0, 12).toUpperCase();
